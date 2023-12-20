@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="maze"></div>
+    <div id="mazes">
+        <div class="maze-button">
+            <div class="maze" id="dfs"></div>
+            <button onclick="dfs(grid_dfs, document.getElementById('dfs'), 0, 120)">dfs</button>
+        </div>
+        <div class="maze-button">
+            <div class="maze" id="bfs"></div>
+            <button onclick="bfs(grid_bfs, document.getElementById('bfs'), 0, 120)">bfs</button>
+        </div>
+        <div class="maze-button">
+            <div class="maze" id="astar"></div>
+            <button onclick="astar(grid_astar, document.getElementById('astar'), 0, 120)">A*</button>
+        </div>
+    </div>
+    <button onclick="dfs(grid_dfs, document.getElementById('dfs'), 0, 120);bfs(grid_bfs, document.getElementById('bfs'), 0, 120);astar(grid_astar, document.getElementById('astar'), 0, 120);">les trois d'un coup</button>
     <script type="text/javascript" src="./js/maze.js"></script>
 </body>
 </html>

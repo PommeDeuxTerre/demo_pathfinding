@@ -7,24 +7,24 @@ const opposite_moves = [bottom_wall,right_wall,left_wall,top_wall];
 const get_move_dir = [-WIDTH,-1,1,WIDTH]
 const inverse_move = [3,2,1,0]
 
-function set_grid()
+function set_grid(id)
 {
-    const maze_html = document.getElementById("maze");
+    const maze_html = document.getElementById(id);
     for (let i=0;i<HEIGHT;i++)
     {
         //init normal line
         const line_html = document.createElement("div")
         line_html.className="line_maze"
-        line_html.id=`line_square${i}`
+        line_html.classList.add(`line_square${i}`);
         for (let j=0;j<WIDTH;j++)
         {
             //init normal square
-            const square = document.createElement("div")
-            square.id = ""+(i*WIDTH+j)
-            square.classList.add("square")
-            line_html.appendChild(square)
+            const square = document.createElement("div");
+            square.classList.add(""+(i*WIDTH+j));
+            square.classList.add("square");
+            line_html.appendChild(square);
         }
-        maze_html.appendChild(line_html)
+        maze_html.appendChild(line_html);
     }
 }
 
@@ -33,36 +33,32 @@ function get_random(possibilities_number)
     return Math.floor(Math.random()*possibilities_number)
 }
 
-function top_wall(index)
+function top_wall(index, html_grid)
 {
-    document.getElementById(index-WIDTH).style.borderBottomColor = light_red;
-    document.getElementById(index).style.borderTopColor = light_red;
+    html_grid.getElementsByClassName(index-WIDTH)[0].style.borderBottomColor = light_red;
+    html_grid.getElementsByClassName(index)[0].style.borderTopColor = light_red;
 }
-function bottom_wall(index)
+function bottom_wall(index, html_grid)
 {
-    document.getElementById(index+WIDTH).style.borderTopColor = light_red;
-    document.getElementById(index).style.borderBottomColor = light_red;
+    html_grid.getElementsByClassName(index+WIDTH)[0].style.borderTopColor = light_red;
+    html_grid.getElementsByClassName(index)[0].style.borderBottomColor = light_red;
 
 }
-function left_wall(index)
+function left_wall(index, html_grid)
 {
-    document.getElementById(index-1).style.borderRightColor = light_red;
-    document.getElementById(index).style.borderLeftColor = light_red;
+    html_grid.getElementsByClassName(index-1)[0].style.borderRightColor = light_red;
+    html_grid.getElementsByClassName(index)[0].style.borderLeftColor = light_red;
 }
-function right_wall(index)
+function right_wall(index, html_grid)
 {
-    document.getElementById(index+1).style.borderLeftColor = light_red;
-    document.getElementById(index).style.borderRightColor = light_red;
+    html_grid.getElementsByClassName(index+1)[0].style.borderLeftColor = light_red;
+    html_grid.getElementsByClassName(index)[0].style.borderRightColor = light_red;
 }
 
 
 //get the possible moves for the maze generator
 function get_moves(index, grid)
 {
-    if (index==0 || index==WIDTH-1 || index==WIDTH*(HEIGHT-1) || index==WIDTH*HEIGHT-1)
-    {
-        return 0;
-    }
     //moves = 0000 in bin
     let all_moves = 0;
     //up
@@ -90,7 +86,7 @@ function get_moves(index, grid)
 }
 
 //maze generator
-function play_random_move(index, all_moves, grid)
+function play_random_move(index, all_moves, grid, html_grid)
 {
     //get the random move
     let nb_moves = 0;
@@ -120,13 +116,13 @@ function play_random_move(index, all_moves, grid)
 
     //play the move on the html grid
     grid[index+get_move_dir[move]] = 0;
-    moves[move](index)
-    opposite_moves[move](index+get_move_dir[move])
+    moves[move](index, html_grid)
+    opposite_moves[move](index+get_move_dir[move], html_grid)
     return move;
 }
 
-function change_color(index, color, grid){
-    square = document.getElementById(index)
+function change_color(index, color, grid, html_grid){
+    square = html_grid.getElementsByClassName(index)[0]
     square.style.backgroundColor = color;
     if (grid[index] & 1)square.style.borderTopColor=color;
     if (grid[index] & 2)square.style.borderLeftColor=color;
@@ -135,32 +131,217 @@ function change_color(index, color, grid){
 }
 
 //generate the maze html and js
-async function maze_generator(index, grid, first=false)
+async function maze_generator(index, grid, html_grid, first=false)
 {
     if (first)await sleep(1000);
-    change_color(index, "blue", grid)
+    change_color(index, "blue", grid, html_grid)
     let all_moves = get_moves(index, grid)
     let move;
     while (all_moves!=0)
     {
-        move = play_random_move(index, all_moves, grid);
-        await sleep(100);
+        move = play_random_move(index, all_moves, grid, html_grid);
+        //await sleep(50);
         grid[index] |= 2**move;
         grid[index+get_move_dir[move]] |= 2**inverse_move[move]
-        change_color(index, "green", grid)
-        await maze_generator(index+get_move_dir[move], grid)
-        change_color(index, "blue", grid)
+        change_color(index, "green", grid, html_grid)
+        await maze_generator(index+get_move_dir[move], grid, html_grid)
+        change_color(index, "blue", grid, html_grid)
         all_moves = get_moves(index, grid)
     }
-    await sleep(100);
-    change_color(index, "grey", grid)
+    //await sleep(50);
+    change_color(index, "grey", grid, html_grid)
 }
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-set_grid()
+function is_possible_move(grid, index, move){
+    switch (move){
+        case "up":
+            return grid[index] & 1;
+        case "left":
+            return grid[index] & 2;
+        case "right":
+            return grid[index] & 4;
+        case "down":
+            return grid[index] & 8;
+    }
+}
 
+async function dfs(grid, html_grid, start, end){
+    console.log(document.body.getElementsByClassName(5))
+    console.log(start, end)
+    let explored_nodes = [];
+    let nun_explored_nodes = [start];
+    let backtrack = [];
+    let node = start;
+    while (nun_explored_nodes.length>0){
+        await sleep(100);
+        change_color(node, "purple", grid, html_grid)
+        node = nun_explored_nodes.splice(nun_explored_nodes.length-1,1)[0];
+        explored_nodes.push(node)
+        change_color(node, "blue", grid, html_grid)
+        if (node===end)break;
+        //up
+        if (is_possible_move(grid, node, "up") && !nun_explored_nodes.includes(node-WIDTH) && !explored_nodes.includes(node-WIDTH)){
+            nun_explored_nodes.push(node-WIDTH)
+            backtrack[node-WIDTH] = node;
+            change_color(node-WIDTH, "yellow", grid, html_grid)
+        }
+        //left
+        if (is_possible_move(grid, node, "left") && !nun_explored_nodes.includes(node-1) && !explored_nodes.includes(node-1)){
+            nun_explored_nodes.push(node-1)
+            backtrack[node-1] = node;
+            change_color(node-1, "yellow", grid, html_grid)
+        }
+        //right
+        if (is_possible_move(grid, node, "right") && !nun_explored_nodes.includes(node+1) && !explored_nodes.includes(node+1)){
+            nun_explored_nodes.push(node+1)
+            backtrack[node+1] = node;
+            change_color(node+1, "yellow", grid, html_grid)
+        }
+        //bottom
+        if (is_possible_move(grid, node, "down") && !nun_explored_nodes.includes(node+WIDTH) && !explored_nodes.includes(node+WIDTH)){
+            nun_explored_nodes.push(node+WIDTH)
+            backtrack[node+WIDTH] = node;
+            change_color(node+WIDTH, "yellow", grid, html_grid)
+        }
+    }
+    while (node!==start && node!==undefined){
+        await sleep(100);
+        change_color(node, "green", grid, html_grid)
+        node = backtrack[node];
+    }
+    change_color(node, "green", grid, html_grid)
+}
+
+async function bfs(grid, html_grid, start, end){
+    console.log(document.body.getElementsByClassName(5))
+    console.log(start, end)
+    let explored_nodes = [];
+    let nun_explored_nodes = [start];
+    let backtrack = [];
+    let node = start;
+    while (nun_explored_nodes.length>0){
+        await sleep(100);
+        change_color(node, "purple", grid, html_grid)
+        node = nun_explored_nodes.splice(0,1)[0];
+        explored_nodes.push(node)
+        change_color(node, "blue", grid, html_grid)
+        if (node===end)break;
+        //up
+        if (is_possible_move(grid, node, "up") && !nun_explored_nodes.includes(node-WIDTH) && !explored_nodes.includes(node-WIDTH)){
+            nun_explored_nodes.push(node-WIDTH)
+            backtrack[node-WIDTH] = node;
+            change_color(node-WIDTH, "yellow", grid, html_grid)
+        }
+        //left
+        if (is_possible_move(grid, node, "left") && !nun_explored_nodes.includes(node-1) && !explored_nodes.includes(node-1)){
+            nun_explored_nodes.push(node-1)
+            backtrack[node-1] = node;
+            change_color(node-1, "yellow", grid, html_grid)
+        }
+        //right
+        if (is_possible_move(grid, node, "right") && !nun_explored_nodes.includes(node+1) && !explored_nodes.includes(node+1)){
+            nun_explored_nodes.push(node+1)
+            backtrack[node+1] = node;
+            change_color(node+1, "yellow", grid, html_grid)
+        }
+        //bottom
+        if (is_possible_move(grid, node, "down") && !nun_explored_nodes.includes(node+WIDTH) && !explored_nodes.includes(node+WIDTH)){
+            nun_explored_nodes.push(node+WIDTH)
+            backtrack[node+WIDTH] = node;
+            change_color(node+WIDTH, "yellow", grid, html_grid)
+        }
+    }
+    while (node!==start && node!==undefined){
+        await sleep(100);
+        change_color(node, "green", grid, html_grid)
+        node = backtrack[node];
+    }
+    change_color(node, "green", grid, html_grid)
+}
+
+function heuristic_insert(node, nun_explored_nodes){
+    for (let i=0;i<nun_explored_nodes.length;i++){
+        if (node["heuristic"]<nun_explored_nodes[i]["heuristic"]){
+            nun_explored_nodes.splice(i, 0, node)
+            return;
+        }
+    }
+    nun_explored_nodes.push(node);
+}
+
+async function astar(grid, html_grid, start, end){
+    console.log(document.body.getElementsByClassName(5))
+    console.log(start, end)
+    let explored_nodes = [];
+    let nun_explored_nodes = [{"index":start,"len_path":0,"heuristic":0}];
+    let backtrack = [];
+    let node = start;
+    let node_i = start;
+    while (nun_explored_nodes.length>0){
+        await sleep(100);
+        change_color(node_i, "purple", grid, html_grid)
+        node = nun_explored_nodes.splice(0,1)[0];
+        node_i = node["index"]
+
+        explored_nodes.push(node_i)
+        change_color(node_i, "blue", grid, html_grid)
+        if (node_i===end)break;
+        //up
+        if (is_possible_move(grid, node_i, "up") && !nun_explored_nodes.includes(node_i-WIDTH) && !explored_nodes.includes(node_i-WIDTH)){
+            heuristic_insert({"index":node_i-WIDTH,"len_path":node["len_path"]+1, "heuristic":node["len_path"]+1+get_distance(end%WIDTH,(node_i-WIDTH)%WIDTH, Math.floor(end/WIDTH), Math.floor((node_i-WIDTH)/WIDTH))}, nun_explored_nodes)
+            //nun_explored_nodes.push(node-WIDTH)
+            backtrack[node_i-WIDTH] = node_i;
+            change_color(node_i-WIDTH, "yellow", grid, html_grid)
+        }
+        //left
+        if (is_possible_move(grid, node_i, "left") && !nun_explored_nodes.includes(node_i-1) && !explored_nodes.includes(node_i-1)){
+            heuristic_insert({"index":node_i-1,"len_path":node["len_path"]+1, "heuristic":node["len_path"]+1+get_distance(end%WIDTH,(node_i-1)%WIDTH, Math.floor(end/WIDTH), Math.floor((node_i-1)/WIDTH))}, nun_explored_nodes)
+            //nun_explored_nodes.push(node-1)
+            backtrack[node_i-1] = node_i;
+            change_color(node_i-1, "yellow", grid, html_grid)
+        }
+        //right
+        if (is_possible_move(grid, node_i, "right") && !nun_explored_nodes.includes(node_i+1) && !explored_nodes.includes(node_i+1)){
+            heuristic_insert({"index":node_i+1,"len_path":node["len_path"]+1, "heuristic":node["len_path"]+1+get_distance(end%WIDTH,(node_i+1)%WIDTH, Math.floor(end/WIDTH), Math.floor((node_i+1)/WIDTH))}, nun_explored_nodes)
+            //nun_explored_nodes.push(node+1)
+            backtrack[node_i+1] = node_i;
+            change_color(node_i+1, "yellow", grid, html_grid)
+        }
+        //bottom
+        if (is_possible_move(grid, node_i, "down") && !nun_explored_nodes.includes(node_i+WIDTH) && !explored_nodes.includes(node_i+WIDTH)){
+            heuristic_insert({"index":node_i+WIDTH,"len_path":node["len_path"]+1, "heuristic":node["len_path"]+1+get_distance(end%WIDTH,(node_i+WIDTH)%WIDTH, Math.floor(end/WIDTH), Math.floor((node_i+WIDTH)/WIDTH))}, nun_explored_nodes)
+            //nun_explored_nodes.push(node+WIDTH)
+            backtrack[node_i+WIDTH] = node_i;
+            change_color(node_i+WIDTH, "yellow", grid, html_grid)
+        }
+    }
+    console.log(node_i)
+    console.log(backtrack)
+    while (node_i!==start && node_i!==undefined){
+        await sleep(100);
+        change_color(node_i, "green", grid, html_grid)
+        node_i = backtrack[node_i];
+    }
+    change_color(node_i, "green", grid, html_grid)
+}
+
+function get_distance(x1, x2, y1, y2){
+    let x = x1-x2;
+    let y = y1-y2;
+    return Math.sqrt(x*x + y*y);
+}
+
+set_grid("dfs")
+set_grid("bfs")
+set_grid("astar")
 let grid = []
-maze_generator(1, grid, true)
+let grid_dfs = []
+let grid_bfs = []
+let grid_astar = []
+maze_generator(Math.floor(Math.random()*100), grid_dfs, document.getElementById("dfs"), true)
+maze_generator(Math.floor(Math.random()*100), grid_bfs, document.getElementById("bfs"), true)
+maze_generator(Math.floor(Math.random()*100), grid_astar, document.getElementById("astar"), true)

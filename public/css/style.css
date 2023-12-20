@@ -1,4 +1,9 @@
-#maze {
+#mazes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.maze {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -14,5 +19,5 @@
     background-color: #ef233c;
     width: 50px;
     height: 50px;
-    border: 1px solid black;
+    border: 1px solid #ef233c;
 }
