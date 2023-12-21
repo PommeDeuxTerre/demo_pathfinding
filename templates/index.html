@@ -10,18 +10,21 @@
     <div id="mazes">
         <div class="maze-button">
             <div class="maze" id="dfs"></div>
-            <button onclick="dfs(grid_dfs, document.getElementById('dfs'), 0, 120)">dfs</button>
+            <button onclick="dfs(grid, document.getElementById('dfs'), start, destination)">dfs</button>
         </div>
         <div class="maze-button">
             <div class="maze" id="bfs"></div>
-            <button onclick="bfs(grid_bfs, document.getElementById('bfs'), 0, 120)">bfs</button>
+            <button onclick="bfs(grid, document.getElementById('bfs'), start, destination)">bfs</button>
         </div>
         <div class="maze-button">
             <div class="maze" id="astar"></div>
-            <button onclick="astar(grid_astar, document.getElementById('astar'), 0, 120)">A*</button>
+            <button onclick="astar(grid, document.getElementById('astar'), start, destination)">A*</button>
         </div>
     </div>
-    <button onclick="dfs(grid_dfs, document.getElementById('dfs'), 0, 120);bfs(grid_bfs, document.getElementById('bfs'), 0, 120);astar(grid_astar, document.getElementById('astar'), 0, 120);">les trois d'un coup</button>
+    <div id="commands">
+        <button onclick="dfs(grid, document.getElementById('dfs'), start, destination);bfs(grid, document.getElementById('bfs'), start, destination);astar(grid, document.getElementById('astar'), start, destination);">les trois d'un coup</button>
+        <button onclick="reset_grid(html_grids)">réinitialiser les labyrinthes</button>
+    </div>
     <script type="text/javascript" src="./js/maze.js"></script>
 </body>
 </html>

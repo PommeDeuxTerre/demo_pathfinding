@@ -1,6 +1,9 @@
-const WIDTH = 11
-const HEIGHT = 11
+const WIDTH = 50
+const HEIGHT = 50
 const light_red =  "#ef233c";
+let destination = Math.floor(Math.random()*2500);
+let start = Math.floor(Math.random()*2500);
+let grid = []
 
 const moves = [top_wall,left_wall,right_wall,bottom_wall];
 const opposite_moves = [bottom_wall,right_wall,left_wall,top_wall];
@@ -62,7 +65,6 @@ function get_moves(index, grid)
     //moves = 0000 in bin
     let all_moves = 0;
     //up
-    console.log(index, grid)
     if (index >= WIDTH && grid[index-WIDTH]==undefined)
     {
         all_moves |= 1;
@@ -86,7 +88,7 @@ function get_moves(index, grid)
 }
 
 //maze generator
-function play_random_move(index, all_moves, grid, html_grid)
+function play_random_move(index, all_moves, grid, html_grids)
 {
     //get the random move
     let nb_moves = 0;
@@ -116,13 +118,14 @@ function play_random_move(index, all_moves, grid, html_grid)
 
     //play the move on the html grid
     grid[index+get_move_dir[move]] = 0;
-    moves[move](index, html_grid)
-    opposite_moves[move](index+get_move_dir[move], html_grid)
+    for (let i=0;i<html_grids.length;i++)moves[move](index, html_grids[i]);
+    for (let i=0;i<html_grids.length;i++)opposite_moves[move](index+get_move_dir[move], html_grids[i]);
     return move;
 }
 
 function change_color(index, color, grid, html_grid){
     square = html_grid.getElementsByClassName(index)[0]
+    if (square.style.backgroundColor==="black" || square.style.backgroundColor==="white")return;
     square.style.backgroundColor = color;
     if (grid[index] & 1)square.style.borderTopColor=color;
     if (grid[index] & 2)square.style.borderLeftColor=color;
@@ -131,25 +134,25 @@ function change_color(index, color, grid, html_grid){
 }
 
 //generate the maze html and js
-async function maze_generator(index, grid, html_grid, first=false)
+async function maze_generator(index, grid, html_grids, first=false)
 {
-    if (first)await sleep(1000);
-    change_color(index, "blue", grid, html_grid)
+    //if (first)await sleep(1);
+    for (let i=0;i<html_grids.length;i++)change_color(index, "blue", grid, html_grids[i])
     let all_moves = get_moves(index, grid)
     let move;
     while (all_moves!=0)
     {
-        move = play_random_move(index, all_moves, grid, html_grid);
+        move = play_random_move(index, all_moves, grid, html_grids);
         //await sleep(50);
         grid[index] |= 2**move;
         grid[index+get_move_dir[move]] |= 2**inverse_move[move]
-        change_color(index, "green", grid, html_grid)
-        await maze_generator(index+get_move_dir[move], grid, html_grid)
-        change_color(index, "blue", grid, html_grid)
+        for (let i=0;i<html_grids.length;i++)change_color(index, "green", grid, html_grids[i])
+        await maze_generator(index+get_move_dir[move], grid, html_grids)
+        for (let i=0;i<html_grids.length;i++)change_color(index, "blue", grid, html_grids[i])
         all_moves = get_moves(index, grid)
     }
     //await sleep(50);
-    change_color(index, "grey", grid, html_grid)
+    for (let i=0;i<html_grids.length;i++)change_color(index, "grey", grid, html_grids[i])
 }
 
 function sleep(ms) {
@@ -170,14 +173,12 @@ function is_possible_move(grid, index, move){
 }
 
 async function dfs(grid, html_grid, start, end){
-    console.log(document.body.getElementsByClassName(5))
-    console.log(start, end)
     let explored_nodes = [];
     let nun_explored_nodes = [start];
     let backtrack = [];
     let node = start;
     while (nun_explored_nodes.length>0){
-        await sleep(100);
+        await sleep(5);
         change_color(node, "purple", grid, html_grid)
         node = nun_explored_nodes.splice(nun_explored_nodes.length-1,1)[0];
         explored_nodes.push(node)
@@ -209,7 +210,7 @@ async function dfs(grid, html_grid, start, end){
         }
     }
     while (node!==start && node!==undefined){
-        await sleep(100);
+        await sleep(5);
         change_color(node, "green", grid, html_grid)
         node = backtrack[node];
     }
@@ -217,14 +218,12 @@ async function dfs(grid, html_grid, start, end){
 }
 
 async function bfs(grid, html_grid, start, end){
-    console.log(document.body.getElementsByClassName(5))
-    console.log(start, end)
     let explored_nodes = [];
     let nun_explored_nodes = [start];
     let backtrack = [];
     let node = start;
     while (nun_explored_nodes.length>0){
-        await sleep(100);
+        await sleep(5);
         change_color(node, "purple", grid, html_grid)
         node = nun_explored_nodes.splice(0,1)[0];
         explored_nodes.push(node)
@@ -256,7 +255,7 @@ async function bfs(grid, html_grid, start, end){
         }
     }
     while (node!==start && node!==undefined){
-        await sleep(100);
+        await sleep(5);
         change_color(node, "green", grid, html_grid)
         node = backtrack[node];
     }
@@ -274,15 +273,13 @@ function heuristic_insert(node, nun_explored_nodes){
 }
 
 async function astar(grid, html_grid, start, end){
-    console.log(document.body.getElementsByClassName(5))
-    console.log(start, end)
     let explored_nodes = [];
     let nun_explored_nodes = [{"index":start,"len_path":0,"heuristic":0}];
     let backtrack = [];
     let node = start;
     let node_i = start;
     while (nun_explored_nodes.length>0){
-        await sleep(100);
+        await sleep(5);
         change_color(node_i, "purple", grid, html_grid)
         node = nun_explored_nodes.splice(0,1)[0];
         node_i = node["index"]
@@ -319,10 +316,8 @@ async function astar(grid, html_grid, start, end){
             change_color(node_i+WIDTH, "yellow", grid, html_grid)
         }
     }
-    console.log(node_i)
-    console.log(backtrack)
     while (node_i!==start && node_i!==undefined){
-        await sleep(100);
+        await sleep(5);
         change_color(node_i, "green", grid, html_grid)
         node_i = backtrack[node_i];
     }
@@ -335,13 +330,24 @@ function get_distance(x1, x2, y1, y2){
     return Math.sqrt(x*x + y*y);
 }
 
-set_grid("dfs")
-set_grid("bfs")
-set_grid("astar")
-let grid = []
-let grid_dfs = []
-let grid_bfs = []
-let grid_astar = []
-maze_generator(Math.floor(Math.random()*100), grid_dfs, document.getElementById("dfs"), true)
-maze_generator(Math.floor(Math.random()*100), grid_bfs, document.getElementById("bfs"), true)
-maze_generator(Math.floor(Math.random()*100), grid_astar, document.getElementById("astar"), true)
+async function reset_grid(html_grids){
+    for (let i=0;i<html_grids.length;i++){
+        html_grids[i].innerHTML = "";
+    }
+    await sleep(1);
+    await main(html_grids)
+}
+
+async function main(html_grids){
+    grid = [];
+    destination = Math.floor(Math.random()*2500);
+    start = Math.floor(Math.random()*2500);
+    set_grid("dfs")
+    set_grid("bfs")
+    set_grid("astar")
+    await maze_generator(Math.floor(Math.random()*100), grid, html_grids, true)
+    for (let i=0;i<html_grids.length;i++)change_color(start, "white", grid, html_grids[i])
+    for (let i=0;i<html_grids.length;i++)change_color(destination, "black", grid, html_grids[i])
+}
+let html_grids = [document.getElementById("dfs"), document.getElementById("bfs"), document.getElementById("astar")]
+main(html_grids)
