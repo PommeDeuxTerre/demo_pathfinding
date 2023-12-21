@@ -183,6 +183,8 @@ async function dfs(grid, html_grid, start, end){
         node = nun_explored_nodes.splice(nun_explored_nodes.length-1,1)[0];
         explored_nodes.push(node)
         change_color(node, "blue", grid, html_grid)
+        update(explored_nodes.length, ["explored_dfs", "path_dfs"])
+
         if (node===end)break;
         //up
         if (is_possible_move(grid, node, "up") && !nun_explored_nodes.includes(node-WIDTH) && !explored_nodes.includes(node-WIDTH)){
@@ -228,6 +230,8 @@ async function bfs(grid, html_grid, start, end){
         node = nun_explored_nodes.splice(0,1)[0];
         explored_nodes.push(node)
         change_color(node, "blue", grid, html_grid)
+        update(explored_nodes.length, ["explored_bfs", "path_bfs"])
+
         if (node===end)break;
         //up
         if (is_possible_move(grid, node, "up") && !nun_explored_nodes.includes(node-WIDTH) && !explored_nodes.includes(node-WIDTH)){
@@ -283,9 +287,10 @@ async function astar(grid, html_grid, start, end){
         change_color(node_i, "purple", grid, html_grid)
         node = nun_explored_nodes.splice(0,1)[0];
         node_i = node["index"]
-
         explored_nodes.push(node_i)
         change_color(node_i, "blue", grid, html_grid)
+        update(explored_nodes.length, ["explored_astar", "path_astar"])
+
         if (node_i===end)break;
         //up
         if (is_possible_move(grid, node_i, "up") && !nun_explored_nodes.includes(node_i-WIDTH) && !explored_nodes.includes(node_i-WIDTH)){
@@ -330,12 +335,20 @@ function get_distance(x1, x2, y1, y2){
     return Math.sqrt(x*x + y*y);
 }
 
+function update(score, ids, path){
+    document.getElementById(ids[0]).innerHTML = score;
+    if (path)document.getElementById(ids[1]).innerHTML = path;
+}
+
 async function reset_grid(html_grids){
     for (let i=0;i<html_grids.length;i++){
         html_grids[i].innerHTML = "";
     }
     await sleep(1);
     await main(html_grids)
+    update("N", ["explored_astar", "path_astar"], "N");
+    update("N", ["explored_bfs", "path_bfs"], "N");
+    update("N", ["explored_dfs", "path_dfs"], "N");
 }
 
 async function main(html_grids){

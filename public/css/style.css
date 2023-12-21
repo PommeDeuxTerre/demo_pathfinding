@@ -47,3 +47,11 @@ button {
 button:hover {
     background: linear-gradient(90deg, #ef233c, #d90429);
 }
+a {
+    color: #ef233c;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+a:hover {
+    color: #d90429
+}

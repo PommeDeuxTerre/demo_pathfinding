@@ -11,14 +11,23 @@
         <div class="maze-button">
             <div class="maze" id="dfs"></div>
             <button onclick="dfs(grid, document.getElementById('dfs'), start, destination)">dfs</button>
+            <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank">fonctionnement</a>
+            <p>cases éxplorées: <span id="explored_dfs">N</span></p>
+            <p>longueur du chemin: <span id="path_dfs">N</span></p>
         </div>
         <div class="maze-button">
             <div class="maze" id="bfs"></div>
             <button onclick="bfs(grid, document.getElementById('bfs'), start, destination)">bfs</button>
+            <a href="https://en.wikipedia.org/wiki/Breadth-first_search" target="_blank">fonctionnement</a>
+            <p>cases éxplorées: <span id="explored_bfs">N</span></p>
+            <p>longueur du chemin: <span id="path_bfs">N</span></p>
         </div>
         <div class="maze-button">
             <div class="maze" id="astar"></div>
             <button onclick="astar(grid, document.getElementById('astar'), start, destination)">A*</button>
+            <a href="https://en.wikipedia.org/wiki/A*_search_algorithm" target="_blank">fonctionnement</a>
+            <p>cases éxplorées: <span id="explored_astar">N</span></p>
+            <p>longueur du chemin: <span id="path_astar">N</span></p>
         </div>
     </div>
     <div id="commands">
