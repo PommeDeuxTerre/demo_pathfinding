@@ -29,10 +29,15 @@ body {
     height: 8px;
     border: 1px solid #ef233c;
 }
+#sub-section {
+    display: flex;
+    flex-direction: row;
+}
 #commands {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    width: 50%;
+    justify-content: space-around;
 }
 button {
     text-align: center;
@@ -57,4 +62,44 @@ a:hover {
 }
 p {
     color: grey;
+}
+#colors {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 50%;
+}
+.color {
+    display: block;
+    width: 250px;
+}
+.color p {
+    display: inline;
+}
+.color div {
+    display: inline-block;
+}
+#start_color {
+    background-color: white;
+    border: white solid 1px;
+}
+#end_color {
+    background-color: black;
+    border: black solid 1px;
+}
+#explored_color {
+    background-color: purple;
+    border: purple solid 1px;
+}
+#wait_color {
+    background-color: yellow;
+    border: yellow solid 1px;
+}
+#not_found_color {
+    background-color: grey;
+    border: grey solid 1px;
+}
+#path_color {
+    background-color: green;
+    border: green solid 1px;
 }

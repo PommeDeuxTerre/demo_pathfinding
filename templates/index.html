@@ -30,9 +30,19 @@
             <p>longueur du chemin: <span id="path_astar">N</span></p>
         </div>
     </div>
-    <div id="commands">
-        <button onclick="dfs(grid, document.getElementById('dfs'), start, destination);bfs(grid, document.getElementById('bfs'), start, destination);astar(grid, document.getElementById('astar'), start, destination);">les trois d'un coup</button>
-        <button onclick="reset_grid(html_grids)">réinitialiser les labyrinthes</button>
+    <div id="sub-section">
+        <div id="commands">
+            <button onclick="dfs(grid, document.getElementById('dfs'), start, destination);bfs(grid, document.getElementById('bfs'), start, destination);astar(grid, document.getElementById('astar'), start, destination);">les trois d'un coup</button>
+            <button onclick="reset_grid(html_grids)">réinitialiser les labyrinthes</button>
+        </div>
+        <div id="colors">
+            <div class="color"><div id="start_color" class="square"></div><p>lieu de départ</p></div>
+            <div class="color"><div id="end_color" class="square"></div><p>lieu d'arrivée</p></div>
+            <div class="color"><div id="explored_color" class="square"></div><p>cases déjà  explorées</p></div>
+            <div class="color"><div id="wait_color" class="square"></div><p>cases en attente d'exploration</p></div>
+            <div class="color"><div id="not_found_color" class="square"></div><p>cases qui n'ont pas encore été trouvées</p></div>
+            <div class="color"><div id="path_color" class="square"></div><p>case du chemin final</p></div>
+        </div>
     </div>
     <script type="text/javascript" src="./js/maze.js"></script>
 </body>
