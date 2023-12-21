@@ -211,7 +211,10 @@ async function dfs(grid, html_grid, start, end){
             change_color(node+WIDTH, "yellow", grid, html_grid)
         }
     }
+    let counter = 1;
     while (node!==start && node!==undefined){
+        counter++;
+        update(explored_nodes.length, ["explored_dfs", "path_dfs"], counter)
         await sleep(5);
         change_color(node, "green", grid, html_grid)
         node = backtrack[node];
@@ -258,12 +261,15 @@ async function bfs(grid, html_grid, start, end){
             change_color(node+WIDTH, "yellow", grid, html_grid)
         }
     }
+    let counter = 1;
     while (node!==start && node!==undefined){
+        counter++;
+        update(explored_nodes.length, ["explored_bfs", "path_bfs"], counter);
         await sleep(5);
         change_color(node, "green", grid, html_grid)
         node = backtrack[node];
     }
-    change_color(node, "green", grid, html_grid)
+    change_color(node, "green", grid, html_grid);
 }
 
 function heuristic_insert(node, nun_explored_nodes){
@@ -321,7 +327,10 @@ async function astar(grid, html_grid, start, end){
             change_color(node_i+WIDTH, "yellow", grid, html_grid)
         }
     }
+    let counter = 1;
     while (node_i!==start && node_i!==undefined){
+        counter++;
+        update(explored_nodes.length, ["explored_astar", "path_astar"], counter)
         await sleep(5);
         change_color(node_i, "green", grid, html_grid)
         node_i = backtrack[node_i];
